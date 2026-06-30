@@ -2,7 +2,47 @@
 
 ComposeWeb Studio is an online, client-side Kotlin Compose interpreter that allows developers to write Jetpack Compose-like code and instantly preview a working website in the browser. 
 
-The workspace is styled to match the look and feel of Android Studio (IntelliJ Darcula dark theme), complete with dynamic auto-completion, hover tips, minimized-by-default bottom Logcat tool drawer, and a floating device preview zoom panel.
+---
+
+## How It Can Help
+
+ComposeWeb Studio bridges the gap between Kotlin's modern UI paradigm and the web, enabling a frictionless development and prototyping workflow.
+
+* **Sub-Second Feedback Loop**: Skip the slow Gradle builds and emulator startup times. Write your Compose layouts and see them rendered instantly in the browser.
+* **Easy Learning & Prototyping**: Perfect for learning Jetpack Compose's state-driven UI paradigm, experimenting with layout structures (`Column`, `Row`, `Box`), or mapping design mocks to code.
+* **Ready-To-Go Exports**: Export your interactive Compose layouts directly into a `.zip` package containing both the clean Kotlin source and the setup web files, allowing you to easily port your UI to multiplatform projects.
+* **Visual Inspection**: Use the built-in inspect mode to hover over preview elements and see their corresponding Compose AST node structure.
+
+---
+
+## Under the Hood (Architecture & Fine Details)
+
+ComposeWeb Studio operates entirely in the browser using a custom-built lightweight compiler pipeline:
+
+```mermaid
+graph TD
+    Source[Kotlin-like Compose Code] --> Lexer[Custom Lexer]
+    Lexer --> Tokens[Token Stream]
+    Tokens --> Parser[Custom Parser]
+    Parser --> AST[Abstract Syntax Tree AST]
+    AST --> Validator[Semantic Validator]
+    Validator --> Diagnostics[Error/Warning Diagnostics]
+    AST --> Interpreter[Runtime Interpreter]
+    Interpreter --> ReactRenderer[React Live Preview]
+    Interpreter --> HTMLRenderer[HTML/CSS Exporter]
+```
+
+### The Compiler Pipeline
+1. **Lexical Analysis**: Tokenizes Kotlin syntax, recognizing identifiers, operators, metric literals (`dp`, `sp`), property delegation operators (`by`), and state keywords (`remember`, `mutableStateOf`).
+2. **AST Parsing**: A hand-written recursive-descent parser that generates a strongly-typed Abstract Syntax Tree (AST). It handles variable declarations, conditional `if/else` statements, loops, lambda expressions, and modifier chains.
+3. **Semantic Validation**: Validates the AST against registered component rules, verifying argument counts, parameter types (e.g. asserting `dp` is passed to padding), and reporting diagnostics in real-time.
+4. **State Interpreter**: Evaluates expressions in a sandbox state context. It simulates Compose's state tracking by resolving properties and handling state updates dynamically via Zustand.
+
+### Extensible Registry System
+To prevent code hardcoding and maintain a scalable architecture, we implement a decoupled registration pattern:
+* **UI decoupling**: Individual components (`Column`, `Row`, `Text`, etc.) and modifiers are not hardcoded in the parser or renderer. 
+* **Dynamic Registries**: Components are registered in the component registry and modifiers in the modifier registry.
+* **The "Standard Library"**: All Material 3 styling maps, component properties, and layout structures are defined independently. Adding a new UI component or modifier requires zero edits to the core parsing or rendering engines.
 
 ---
 
@@ -148,6 +188,6 @@ All standard modifiers can be chained on any Composable:
 
 ---
 
-## ⚡ Live Demo
+## Live Demo
 
 Try ComposeWeb Studio live at: [https://composestudio.netlify.app/](https://composestudio.netlify.app/)

@@ -1,4 +1,4 @@
-# ComposeWeb Studio
+# Compose Studio
 
 ComposeWeb Studio is an online, client-side Kotlin Compose interpreter that allows developers to write Jetpack Compose-like code and instantly preview a working website in the browser. 
 

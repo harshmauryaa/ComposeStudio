@@ -6,7 +6,7 @@ The workspace is styled to match the look and feel of Android Studio (IntelliJ D
 
 ---
 
-## 🚀 Key Syntax & Language Support
+## Key Syntax & Language Support
 
 ### 1. Variables & State Actions
 * **State Declarations**: Support for `remember { mutableStateOf(initialValue) }` to track state.
@@ -40,7 +40,7 @@ The workspace is styled to match the look and feel of Android Studio (IntelliJ D
 
 ---
 
-## 🎨 Supported Composable Components
+## Supported Composable Components
 
 ### 1. Core Layouts & Display
 * `Column`: Places children sequentially in a vertical alignment.
@@ -99,7 +99,7 @@ The workspace is styled to match the look and feel of Android Studio (IntelliJ D
 
 ---
 
-## 🛠️ Supported Modifiers
+## Supported Modifiers
 
 All standard modifiers can be chained on any Composable:
 * **Padding & Margins**: `padding(dp)`, `paddingFromBaseline(dp)`, `absolutePadding(dp)`.
@@ -117,7 +117,7 @@ All standard modifiers can be chained on any Composable:
 
 ---
 
-## 📦 Supported Enums & Runtime Stubs
+## Supported Enums & Runtime Stubs
 
 ### Enums
 * `Alignment`: `Top`, `Center`, `Bottom`, `Start`, `CenterHorizontally`, `End`, `TopStart`, `TopEnd`, `BottomStart`, `BottomEnd`.

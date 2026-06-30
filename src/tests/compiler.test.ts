@@ -5,7 +5,7 @@ import { Validator } from '../language/validator/validator';
 import { registerDefaults } from '../language/registry/defaultRegistries';
 import { generateStaticExport } from '../renderer/html/htmlRenderer';
 
-describe('ComposeWeb Studio Compiler & Engine Pipeline', () => {
+describe('Compose Studio Compiler & Engine Pipeline', () => {
   beforeEach(() => {
     // Populate component and modifier registries
     registerDefaults();

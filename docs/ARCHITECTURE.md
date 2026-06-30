@@ -1,6 +1,6 @@
-# ComposeWeb Studio - Architecture & Developer Guide
+# Compose Studio - Architecture & Developer Guide
 
-This document outlines the design, grammar, and rendering pipeline of **ComposeWeb Studio**, a browser-based interpreter that parses Compose-like syntax and renders it into clean HTML/CSS through React.
+This document outlines the design, grammar, and rendering pipeline of **Compose Studio**, a browser-based interpreter that parses Compose-like syntax and renders it into clean HTML/CSS through React.
 
 ---
 

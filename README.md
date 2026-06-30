@@ -1,12 +1,12 @@
 # Compose Studio
 
-ComposeWeb Studio is an online, client-side Kotlin Compose interpreter that allows developers to write Jetpack Compose-like code and instantly preview a working website in the browser. 
+Compose Studio is an online, client-side Kotlin Compose interpreter that allows developers to write Jetpack Compose-like code and instantly preview a working website in the browser. 
 
 ---
 
 ## How It Can Help
 
-ComposeWeb Studio bridges the gap between Kotlin's modern UI paradigm and the web, enabling a frictionless development and prototyping workflow.
+Compose Studio bridges the gap between Kotlin's modern UI paradigm and the web, enabling a frictionless development and prototyping workflow.
 
 * **Sub-Second Feedback Loop**: Skip the slow Gradle builds and emulator startup times. Write your Compose layouts and see them rendered instantly in the browser.
 * **Easy Learning & Prototyping**: Perfect for learning Jetpack Compose's state-driven UI paradigm, experimenting with layout structures (`Column`, `Row`, `Box`), or mapping design mocks to code.
@@ -17,7 +17,7 @@ ComposeWeb Studio bridges the gap between Kotlin's modern UI paradigm and the we
 
 ## Under the Hood (Architecture & Fine Details)
 
-ComposeWeb Studio operates entirely in the browser using a custom-built lightweight compiler pipeline:
+Compose Studio operates entirely in the browser using a custom-built lightweight compiler pipeline:
 
 ```mermaid
 graph TD
@@ -190,4 +190,4 @@ All standard modifiers can be chained on any Composable:
 
 ## Live Demo
 
-Try ComposeWeb Studio live at: [https://composestudio.netlify.app/](https://composestudio.netlify.app/)
+Try Compose Studio live at: [https://composestudio.netlify.app/](https://composestudio.netlify.app/)

@@ -144,7 +144,7 @@ export function generateStaticExport(
   const rawHtml = traverse(ast);
 
   // Format CSS Rules
-  let cssText = `/* Compiled via ComposeWeb Studio */
+  let cssText = `/* Compiled via Compose Studio */
 body {
   margin: 0;
   padding: 0;

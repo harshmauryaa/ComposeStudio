@@ -16,8 +16,8 @@ export const LivePreview: React.FC = () => {
   const inspectMode = useWorkspaceStore((state) => state.inspectMode);
   const setInspectMode = useWorkspaceStore((state) => state.setInspectMode);
 
-  const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const [zoom, setZoom] = useState(0.9);
+  const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('mobile');
+  const [zoom, setZoom] = useState(0.8);
 
   // Initialize the interpreter
   const interpreter = new Interpreter(
@@ -51,10 +51,6 @@ export const LivePreview: React.FC = () => {
     <div className="w-full h-full flex flex-col bg-[#1e1f22] border border-[#2b2d30] rounded-lg overflow-hidden">
       {/* Toolbar */}
       <div className="px-4 py-2 bg-[#2b2d30] border-b border-[#3c3f41] flex items-center justify-between select-none">
-        <span className="text-xs font-semibold text-[#dfe1e5] uppercase tracking-wider">
-          Live Preview
-        </span>
-
         {/* Viewport Sizing */}
         <div className="flex items-center space-x-1.5">
           <button
@@ -97,59 +93,49 @@ export const LivePreview: React.FC = () => {
             {inspectMode ? <Eye className="w-3.5 h-3.5 mr-1" /> : <EyeOff className="w-3.5 h-3.5 mr-1" />}
             Inspect
           </button>
-
-          <div className="w-px h-4 bg-[#3c3f41] mx-1.5" />
-
-          {/* Zoom Controls */}
-          <div className="flex items-center space-x-1">
-            <button
-              className="p-1 rounded text-[#9da5b4] hover:text-[#dfe1e5] hover:bg-[#3c3f41] transition-colors"
-              onClick={() => setZoom(prev => Math.max(prev - 0.1, 0.5))}
-              title="Zoom Out"
-            >
-              <ZoomOut className="w-3.5 h-3.5" />
-            </button>
-            <span
-              className="text-[10px] font-mono text-[#9da5b4] min-w-[34px] text-center cursor-pointer hover:text-[#dfe1e5]"
-              onClick={() => setZoom(1)}
-              title="Reset Zoom"
-            >
-              {Math.round(zoom * 100)}%
-            </span>
-            <button
-              className="p-1 rounded text-[#9da5b4] hover:text-[#dfe1e5] hover:bg-[#3c3f41] transition-colors"
-              onClick={() => setZoom(prev => Math.min(prev + 0.1, 2))}
-              title="Zoom In"
-            >
-              <ZoomIn className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="w-px h-4 bg-[#3c3f41] mx-1.5" />
-
-          {/* Reset State */}
-          <button
-            className="p-1.5 rounded text-[#9da5b4] hover:text-red-400 hover:bg-[#3c3f41] transition-colors"
-            onClick={resetRuntimeState}
-            title="Reset Remembered States"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
         </div>
       </div>
 
-      {/* Viewport Frame */}
-      <div className="flex-1 overflow-auto flex items-center justify-center p-4 bg-[#1e1f22] relative">
-        <div className={getViewportClass()} style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}>
-          <ComposeWebRenderer
-            ast={ast}
-            runtimeState={runtimeState}
-            selectedNodeId={selectedNodeId}
-            hoveredNodeId={hoveredNodeId}
-            inspectMode={inspectMode}
-            onSelectNode={setSelectedNodeId}
-            interpreter={interpreter}
-          />
+      {/* Viewport Frame Wrapper */}
+      <div className="flex-1 relative overflow-hidden bg-[#1e1f22]">
+        {/* Scrollable Canvas Area */}
+        <div className="w-full h-full overflow-auto flex items-center justify-center p-4">
+          <div className={getViewportClass()} style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}>
+            <ComposeWebRenderer
+              ast={ast}
+              runtimeState={runtimeState}
+              selectedNodeId={selectedNodeId}
+              hoveredNodeId={hoveredNodeId}
+              inspectMode={inspectMode}
+              onSelectNode={setSelectedNodeId}
+              interpreter={interpreter}
+            />
+          </div>
+        </div>
+
+        {/* Floating Zoom Controls in bottom right corner */}
+        <div className="absolute right-4 bottom-4 bg-[#2b2d30] border border-[#3c3f41] rounded-md shadow-lg p-1 flex items-center space-x-1.5 z-50 select-none">
+          <button
+            className="p-1 rounded text-[#9da5b4] hover:text-[#dfe1e5] hover:bg-[#3c3f41] transition-colors"
+            onClick={() => setZoom(prev => Math.max(prev - 0.1, 0.5))}
+            title="Zoom Out"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <span
+            className="text-[10px] font-mono text-[#9da5b4] min-w-[34px] text-center cursor-pointer hover:text-[#dfe1e5]"
+            onClick={() => setZoom(0.8)}
+            title="Reset Zoom to 80%"
+          >
+            {Math.round(zoom * 100)}%
+          </span>
+          <button
+            className="p-1 rounded text-[#9da5b4] hover:text-[#dfe1e5] hover:bg-[#3c3f41] transition-colors"
+            onClick={() => setZoom(prev => Math.min(prev + 0.1, 2))}
+            title="Zoom In"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
 

@@ -18,7 +18,7 @@ const App: React.FC = () => {
   // Layout states: matching Android Studio options (Code | Split | Design)
   const [layoutMode, setLayoutMode] = useState<'code' | 'split' | 'design'>('split');
   const [showExplorer, setShowExplorer] = useState(true);
-  const [isConsoleExpanded, setIsConsoleExpanded] = useState(true);
+  const [isConsoleExpanded, setIsConsoleExpanded] = useState(false);
   
   // Compilation notifications state
   const [showNotification, setShowNotification] = useState(false);
@@ -85,12 +85,6 @@ ${html}
       {/* Android Studio Top Status Bar */}
       <header className="h-10 bg-[#1e1f22] border-b border-[#2b2d30] flex items-center justify-between px-3 shrink-0 select-none">
         <div className="flex items-center space-x-2.5">
-          {/* Mac window control dots */}
-          <div className="flex items-center space-x-1.5 mr-2.5 shrink-0">
-            <span className="w-3 h-3 rounded-full bg-[#ff5f56] border border-[#e0443e] cursor-pointer" />
-            <span className="w-3 h-3 rounded-full bg-[#ffbd2e] border border-[#dfa123] cursor-pointer" />
-            <span className="w-3 h-3 rounded-full bg-[#27c93f] border border-[#1aab29] cursor-pointer" />
-          </div>
           {/* Mock AS Icon */}
           <div className="flex items-center justify-center w-5 h-5 bg-[#3c3f41] rounded border border-[#555]">
             <span className="text-[10px] font-bold text-[#3574f0]">AS</span>
@@ -99,8 +93,20 @@ ${html}
           <span className="text-[10px] text-[#9da5b4] font-mono">MainActivity.kt</span>
         </div>
 
-        {/* Quick Exporter buttons */}
+        {/* Top bar actions */}
         <div className="flex items-center space-x-2">
+          <button
+            onClick={() => {
+              setNotificationType(errorsCount > 0 ? 'error' : 'success');
+              setShowNotification(true);
+            }}
+            className="px-2.5 py-1 bg-[#2b2d30] hover:bg-[#3c3f41] text-[#dfe1e5] border border-[#3c3f41] text-[10px] rounded font-medium transition-colors flex items-center space-x-1"
+            title="Build Project (Hammer)"
+          >
+            <span className="text-green-500 font-bold mr-0.5">▶</span>
+            <span>Build</span>
+          </button>
+
           <button
             onClick={handleDownloadZip}
             className="px-2.5 py-1 bg-[#3574f0] hover:bg-[#4c84f2] text-white text-[10px] rounded font-medium transition-colors flex items-center space-x-1"
@@ -196,7 +202,7 @@ ${html}
 
           {/* Right Column: Full-Height Live Preview (Design Panel) */}
           {(layoutMode === 'split' || layoutMode === 'design') && (
-            <section className="flex-1 flex flex-col overflow-hidden">
+            <section className={`${layoutMode === 'design' ? 'flex-1' : 'w-[420px] shrink-0'} flex flex-col overflow-hidden`}>
               
               {/* View mode overrides when in pure Design view */}
               {layoutMode === 'design' && (

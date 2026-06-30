@@ -85,12 +85,9 @@ ${html}
       {/* Android Studio Top Status Bar */}
       <header className="h-10 bg-[#1e1f22] border-b border-[#2b2d30] flex items-center justify-between px-3 shrink-0 select-none">
         <div className="flex items-center space-x-2.5">
-          {/* Mock AS Icon */}
-          <div className="flex items-center justify-center w-5 h-5 bg-[#3c3f41] rounded border border-[#555]">
-            <span className="text-[10px] font-bold text-[#3574f0]">AS</span>
-          </div>
-          <span className="text-xs font-semibold text-[#dfe1e5] shrink-0">ComposeWeb Studio</span>
-          <span className="text-[10px] text-[#9da5b4] font-mono hidden sm:inline">MainActivity.kt</span>
+          {/* Favicon Logo Icon */}
+          <img src="/favicon.svg" alt="Compose Studio Logo" className="w-5 h-5 object-contain shrink-0" />
+          <span className="text-xs font-semibold text-[#dfe1e5] shrink-0">Compose Studio</span>
         </div>
 
         {/* Top bar actions */}

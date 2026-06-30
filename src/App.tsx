@@ -17,7 +17,7 @@ const App: React.FC = () => {
   
   // Layout states: matching Android Studio options (Code | Split | Design)
   const [layoutMode, setLayoutMode] = useState<'code' | 'split' | 'design'>('split');
-  const [showExplorer, setShowExplorer] = useState(true);
+  const [showExplorer, setShowExplorer] = useState(typeof window !== 'undefined' ? window.innerWidth > 768 : true);
   const [isConsoleExpanded, setIsConsoleExpanded] = useState(false);
   
   // Compilation notifications state
@@ -89,8 +89,8 @@ ${html}
           <div className="flex items-center justify-center w-5 h-5 bg-[#3c3f41] rounded border border-[#555]">
             <span className="text-[10px] font-bold text-[#3574f0]">AS</span>
           </div>
-          <span className="text-xs font-semibold text-[#dfe1e5]">ComposeWeb Studio</span>
-          <span className="text-[10px] text-[#9da5b4] font-mono">MainActivity.kt</span>
+          <span className="text-xs font-semibold text-[#dfe1e5] shrink-0">ComposeWeb Studio</span>
+          <span className="text-[10px] text-[#9da5b4] font-mono hidden sm:inline">MainActivity.kt</span>
         </div>
 
         {/* Top bar actions */}
@@ -145,7 +145,7 @@ ${html}
         )}
 
         {/* Workspace Splitting Layout */}
-        <div className="flex-1 flex overflow-hidden bg-[#1e1f22] p-1.5 gap-1.5">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden bg-[#1e1f22] p-1.5 gap-1.5">
           
           {/* Left Column: Monaco Code Editor + Console logs (Logcat) */}
           {(layoutMode === 'code' || layoutMode === 'split') && (
@@ -202,7 +202,7 @@ ${html}
 
           {/* Right Column: Full-Height Live Preview (Design Panel) */}
           {(layoutMode === 'split' || layoutMode === 'design') && (
-            <section className={`${layoutMode === 'design' ? 'flex-1' : 'w-[420px] shrink-0'} flex flex-col overflow-hidden`}>
+            <section className={`${layoutMode === 'design' ? 'flex-1' : 'w-full md:w-[420px] h-[380px] md:h-auto shrink-0'} flex flex-col overflow-hidden`}>
               
               {/* View mode overrides when in pure Design view */}
               {layoutMode === 'design' && (

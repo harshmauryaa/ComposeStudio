@@ -30,74 +30,109 @@ export interface WorkspaceStore {
   addConsoleLog: (message: string) => void;
 }
 
-const DEFAULT_CODE = `val count = remember { mutableStateOf(0) }
+const DEFAULT_CODE = `val isDark = remember { mutableStateOf(false) }
+val count = remember { mutableStateOf(0) }
 
-Column(
-    modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White)
-        .padding(24.dp)
-) {
-    Text(
-        text = "Counter Demo",
-        fontSize = 28.sp,
-        fontWeight = FontWeight.Bold,
-        color = Color(0xFF1E293B)
-    )
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    Text(
-        text = "A simple interactive Compose Counter in clean white mode.",
-        fontSize = 14.sp,
-        color = Color(0xFF64748B)
-    )
-
-    Spacer(modifier = Modifier.height(48.dp))
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFFF8FAFC))
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp)
-        ) {
-            Text(
-                text = "CURRENT VALUE",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF94A3B8)
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "\${count.value}",
-                fontSize = 64.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF0F172A)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row {
-                Button(
-                    onClick = {
-                        count.value = count.value - 1
-                    }
-                ) {
-                    Text(text = "Decrement")
+if (isDark.value) {
+    MaterialTheme(theme = "dark") {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Counter Demo",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    Switch(
+                        checked = isDark.value,
+                        onCheckedChange = { isDark.value = it }
+                    )
                 }
 
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-                Button(
-                    onClick = {
-                        count.value = count.value + 1
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            text = "CURRENT VALUE",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "\${count.value}",
+                            style = MaterialTheme.typography.displayLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Row {
+                            Button(onClick = { count.value = count.value - 1 }) {
+                                Text(text = "Decrement")
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Button(onClick = { count.value = count.value + 1 }) {
+                                Text(text = "Increment")
+                            }
+                        }
                     }
-                ) {
-                    Text(text = "Increment")
+                }
+            }
+        }
+    }
+}
+
+if (!isDark.value) {
+    MaterialTheme(theme = "light") {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Counter Demo",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.weight(1.0f))
+                    Switch(
+                        checked = isDark.value,
+                        onCheckedChange = { isDark.value = it }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            text = "CURRENT VALUE",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "\${count.value}",
+                            style = MaterialTheme.typography.displayLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                        Row {
+                            Button(onClick = { count.value = count.value - 1 }) {
+                                Text(text = "Decrement")
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Button(onClick = { count.value = count.value + 1 }) {
+                                Text(text = "Increment")
+                            }
+                        }
+                    }
                 }
             }
         }

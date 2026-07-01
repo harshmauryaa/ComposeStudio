@@ -2,6 +2,7 @@ import React from 'react';
 import type { ASTNode } from '../../language/ast/ast';
 import { ComponentRegistry } from '../../language/registry/registry';
 import { Interpreter } from '../../runtime/state/interpreter';
+import { interpreterGlobals } from '../../language/registry/defaultRegistries';
 
 interface ComposeWebRendererProps {
   ast: ASTNode | null;
@@ -37,7 +38,7 @@ export const ComposeWebRenderer: React.FC<ComposeWebRendererProps> = ({
     inspectMode,
     onSelectNode,
     interpreter,
-    scope: {}, // Top-level global scope is empty
+    scope: { ...interpreterGlobals },
   };
 
   return <>{renderASTNode(ast, context)}</>;

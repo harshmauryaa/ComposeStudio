@@ -214,5 +214,25 @@ describe('Compose Studio Compiler & Engine Pipeline', () => {
       expect(forNode.varName).toBe('i');
       expect(forNode.iterable.operator).toBe('..');
     });
+
+    it('should parse and resolve MaterialTheme configurations and style typography properties', () => {
+      const code = `
+        MaterialTheme(theme = "dark") {
+          Text(text = "Hello", style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
+        }
+      `;
+      const lexer = new Lexer(code);
+      const tokens = lexer.tokenize();
+      const parser = new Parser(tokens);
+      const ast = parser.parse();
+
+      expect(parser.diagnostics).toHaveLength(0);
+
+      const exportResult = generateStaticExport(ast, {});
+      expect(exportResult.html).toContain('class="theme-dark"');
+      expect(exportResult.html).toContain('font-size: var(--md-sys-typescale-display-large-size)');
+      expect(exportResult.html).toContain('font-weight: var(--md-sys-typescale-display-large-weight)');
+      expect(exportResult.html).toContain('color: var(--md-sys-color-primary)');
+    });
   });
 });

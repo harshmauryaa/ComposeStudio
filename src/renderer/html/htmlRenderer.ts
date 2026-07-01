@@ -2,6 +2,7 @@ import type { ASTNode } from '../../language/ast/ast';
 import { ComponentRegistry } from '../../language/registry/registry';
 import { resolveModifierChain } from '../../runtime/modifier/modifierResolver';
 import { Interpreter } from '../../runtime/state/interpreter';
+import { interpreterGlobals } from '../../language/registry/defaultRegistries';
 
 export interface ExportResult {
   html: string;
@@ -32,7 +33,7 @@ export function generateStaticExport(
 
   const context = {
     interpreter,
-    scope: {},
+    scope: { ...interpreterGlobals },
   };
 
   function traverse(node: ASTNode): string {

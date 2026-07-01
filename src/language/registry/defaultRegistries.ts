@@ -178,6 +178,56 @@ export const interpreterGlobals = {
   LocalContentColor: {
     current: 'Color.White',
   },
+  lightColorScheme: (overrides: any = {}) => ({
+    isDark: false,
+    primary: 'var(--md-sys-color-primary)',
+    onPrimary: 'var(--md-sys-color-on-primary)',
+    primaryContainer: 'var(--md-sys-color-primary-container)',
+    onPrimaryContainer: 'var(--md-sys-color-on-primary-container)',
+    surface: 'var(--md-sys-color-surface)',
+    onSurface: 'var(--md-sys-color-on-surface)',
+    surfaceVariant: 'var(--md-sys-color-surface-variant)',
+    onSurfaceVariant: 'var(--md-sys-color-on-surface-variant)',
+    outline: 'var(--md-sys-color-outline)',
+    ...overrides,
+  }),
+  darkColorScheme: (overrides: any = {}) => ({
+    isDark: true,
+    primary: 'var(--md-sys-color-primary)',
+    onPrimary: 'var(--md-sys-color-on-primary)',
+    primaryContainer: 'var(--md-sys-color-primary-container)',
+    onPrimaryContainer: 'var(--md-sys-color-on-primary-container)',
+    surface: 'var(--md-sys-color-surface)',
+    onSurface: 'var(--md-sys-color-on-surface)',
+    surfaceVariant: 'var(--md-sys-color-surface-variant)',
+    onSurfaceVariant: 'var(--md-sys-color-on-surface-variant)',
+    outline: 'var(--md-sys-color-outline)',
+    ...overrides,
+  }),
+  MaterialTheme: {
+    colorScheme: {
+      primary: 'var(--md-sys-color-primary)',
+      onPrimary: 'var(--md-sys-color-on-primary)',
+      primaryContainer: 'var(--md-sys-color-primary-container)',
+      onPrimaryContainer: 'var(--md-sys-color-on-primary-container)',
+      surface: 'var(--md-sys-color-surface)',
+      onSurface: 'var(--md-sys-color-on-surface)',
+      surfaceVariant: 'var(--md-sys-color-surface-variant)',
+      onSurfaceVariant: 'var(--md-sys-color-on-surface-variant)',
+      outline: 'var(--md-sys-color-outline)',
+    },
+    typography: {
+      displayLarge: { fontSize: 'var(--md-sys-typescale-display-large-size)', fontWeight: 'var(--md-sys-typescale-display-large-weight)' },
+      displayMedium: { fontSize: 'var(--md-sys-typescale-display-medium-size)', fontWeight: 'var(--md-sys-typescale-display-medium-weight)' },
+      displaySmall: { fontSize: 'var(--md-sys-typescale-display-small-size)', fontWeight: 'var(--md-sys-typescale-display-small-weight)' },
+      headlineLarge: { fontSize: 'var(--md-sys-typescale-headline-large-size)', fontWeight: 'var(--md-sys-typescale-headline-large-weight)' },
+      headlineMedium: { fontSize: 'var(--md-sys-typescale-headline-medium-size)', fontWeight: 'var(--md-sys-typescale-headline-medium-weight)' },
+      headlineSmall: { fontSize: 'var(--md-sys-typescale-headline-small-size)', fontWeight: 'var(--md-sys-typescale-headline-small-weight)' },
+      bodyLarge: { fontSize: 'var(--md-sys-typescale-body-large-size)', fontWeight: 'var(--md-sys-typescale-body-large-weight)' },
+      bodyMedium: { fontSize: 'var(--md-sys-typescale-body-medium-size)', fontWeight: 'var(--md-sys-typescale-body-medium-weight)' },
+      bodySmall: { fontSize: 'var(--md-sys-typescale-body-small-size)', fontWeight: 'var(--md-sys-typescale-body-small-weight)' },
+    },
+  },
 };
 
 export function registerDefaults() {
@@ -449,14 +499,15 @@ export function registerDefaults() {
       fontStyle: 'enum',
       textAlign: 'enum',
       textDecoration: 'enum',
+      style: 'enum',
     },
     requiredParams: ['text'],
     render: (props, children, context) => {
       const base = defaultPropsAndClass(props, context);
       const style: React.CSSProperties = {
         color: props.color ? resolveColor(props.color) : 'inherit',
-        fontSize: props.fontSize ? `${props.fontSize}px` : 'inherit',
-        fontWeight: props.fontWeight || 'inherit',
+        fontSize: props.fontSize ? `${props.fontSize}px` : (props.style?.fontSize || 'inherit'),
+        fontWeight: props.fontWeight || (props.style?.fontWeight || 'inherit'),
         fontStyle: props.fontStyle || 'inherit',
         textAlign: props.textAlign || 'inherit',
         textDecoration: props.textDecoration || 'inherit',
@@ -466,7 +517,13 @@ export function registerDefaults() {
       return React.createElement('p', { ...base, style }, props.text || '');
     },
     htmlRender: (props) => {
-      return `<p style="margin: 0; color: ${props.color ? resolveColor(props.color) : 'inherit'}; font-size: ${props.fontSize ? props.fontSize + 'px' : 'inherit'};">${props.text || ''}</p>`;
+      const color = props.color ? resolveColor(props.color) : 'inherit';
+      const fontSize = props.fontSize ? `${props.fontSize}px` : (props.style?.fontSize || 'inherit');
+      const fontWeight = props.fontWeight || (props.style?.fontWeight || 'inherit');
+      const fontStyle = props.fontStyle || 'inherit';
+      const textAlign = props.textAlign || 'inherit';
+      const textDec = props.textDecoration || 'inherit';
+      return `<p style="margin: 0; color: ${color}; font-size: ${fontSize}; font-weight: ${fontWeight}; font-style: ${fontStyle}; text-align: ${textAlign}; text-decoration: ${textDec};">${props.text || ''}</p>`;
     },
   });
 
@@ -511,7 +568,7 @@ export function registerDefaults() {
       const style: React.CSSProperties = {
         border: 'none',
         height: props.thickness ? `${props.thickness}px` : '1px',
-        backgroundColor: props.color ? resolveColor(props.color) : 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: props.color ? resolveColor(props.color) : 'var(--md-sys-color-outline)',
         width: '100%',
         margin: 0,
         ...base.style,
@@ -519,7 +576,7 @@ export function registerDefaults() {
       return React.createElement('hr', { ...base, style });
     },
     htmlRender: (props) => {
-      return `<hr style="border: none; height: ${props.thickness || 1}px; background-color: ${props.color ? resolveColor(props.color) : 'rgba(255,255,255,0.1)'}; width: 100%; margin: 0;" />`;
+      return `<hr style="border: none; height: ${props.thickness || 1}px; background-color: ${props.color ? resolveColor(props.color) : 'var(--md-sys-color-outline)'}; width: 100%; margin: 0;" />`;
     },
   });
 
@@ -537,11 +594,11 @@ export function registerDefaults() {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '8px 16px',
-        backgroundColor: '#3b82f6', // Indigo Blue 500
-        color: '#ffffff',
+        padding: '10px 24px',
+        backgroundColor: 'var(--md-sys-color-primary)',
+        color: 'var(--md-sys-color-on-primary)',
         border: 'none',
-        borderRadius: '6px',
+        borderRadius: '100px', // M3 standard pill shape
         fontSize: '14px',
         fontWeight: '500',
         cursor: 'pointer',
@@ -573,7 +630,7 @@ export function registerDefaults() {
       );
     },
     htmlRender: (props, childrenHtml) => {
-      return `<button style="padding: 8px 16px; background-color: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer;">${childrenHtml}</button>`;
+      return `<button style="padding: 10px 24px; background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); border: none; border-radius: 100px; cursor: pointer; font-size: 14px; font-weight: 500;">${childrenHtml}</button>`;
     },
   });
 
@@ -631,12 +688,13 @@ export function registerDefaults() {
       const base = defaultPropsAndClass(props, context);
       const inputStyle: React.CSSProperties = {
         width: '100%',
-        padding: '10px 12px',
-        borderRadius: '6px',
-        backgroundColor: '#0f172a',
-        border: '1px solid #334155',
-        color: '#f8fafc',
-        fontSize: '14px',
+        padding: '12px 16px',
+        borderRadius: '4px 4px 0 0',
+        backgroundColor: 'var(--md-sys-color-surface-variant)',
+        border: 'none',
+        borderBottom: '1px solid var(--md-sys-color-outline)',
+        color: 'var(--md-sys-color-on-surface-variant)',
+        fontSize: '16px',
         outline: 'none',
         boxSizing: 'border-box',
         ...base.style,
@@ -681,11 +739,12 @@ export function registerDefaults() {
             {
               style: {
                 position: 'absolute',
-                left: '12px',
+                left: '16px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: '#64748b',
-                fontSize: '14px',
+                color: 'var(--md-sys-color-on-surface-variant)',
+                opacity: 0.6,
+                fontSize: '16px',
                 pointerEvents: 'none',
                 fontFamily: 'sans-serif',
               }
@@ -702,7 +761,7 @@ export function registerDefaults() {
       if (typeof props.placeholder === 'string') {
         placeholderText = props.placeholder;
       }
-      return `<input type="text" value="${props.value || ''}" placeholder="${placeholderText}" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" />`;
+      return `<input type="text" value="${props.value || ''}" placeholder="${placeholderText}" style="width: 100%; padding: 12px 16px; border-radius: 4px 4px 0 0; background-color: var(--md-sys-color-surface-variant); border: none; border-bottom: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-on-surface-variant); font-size: 16px; outline: none; box-sizing: border-box;" />`;
     },
   });
 
@@ -759,29 +818,30 @@ export function registerDefaults() {
       const isChecked = !!props.checked;
 
       const trackStyle: React.CSSProperties = {
-        width: '44px',
-        height: '24px',
-        backgroundColor: isChecked ? '#10b981' : '#475569',
-        borderRadius: '12px',
+        width: '52px',
+        height: '32px',
+        backgroundColor: isChecked ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-surface-variant)',
+        border: isChecked ? 'none' : '2px solid var(--md-sys-color-outline)',
+        borderRadius: '16px',
         position: 'relative',
         cursor: 'pointer',
-        transition: 'background-color 0.2s',
+        transition: 'all 0.2s',
         display: 'inline-flex',
         alignItems: 'center',
-        padding: '0 2px',
         boxSizing: 'border-box',
         ...base.style,
       };
 
       const thumbStyle: React.CSSProperties = {
-        width: '20px',
-        height: '20px',
-        backgroundColor: '#ffffff',
+        width: isChecked ? '24px' : '16px',
+        height: isChecked ? '24px' : '16px',
+        backgroundColor: isChecked ? 'var(--md-sys-color-on-primary)' : 'var(--md-sys-color-outline)',
         borderRadius: '50%',
         position: 'absolute',
-        left: isChecked ? '22px' : '2px',
-        transition: 'left 0.2s',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+        left: isChecked ? '24px' : '6px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        transition: 'all 0.2s',
       };
 
       const onToggle = () => {
@@ -796,8 +856,14 @@ export function registerDefaults() {
     },
     htmlRender: (props) => {
       const isChecked = !!props.checked;
-      return `<div style="width: 44px; height: 24px; background-color: ${isChecked ? '#10b981' : '#475569'}; border-radius: 12px; display: inline-flex; align-items: center; position: relative;">
-        <div style="width: 20px; height: 20px; background-color: white; border-radius: 50%; position: absolute; left: ${isChecked ? '22px' : '2px'};"></div>
+      const trackBg = isChecked ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-surface-variant)';
+      const trackBorder = isChecked ? 'none' : '2px solid var(--md-sys-color-outline)';
+      const thumbBg = isChecked ? 'var(--md-sys-color-on-primary)' : 'var(--md-sys-color-outline)';
+      const thumbSize = isChecked ? '24px' : '16px';
+      const thumbLeft = isChecked ? '24px' : '6px';
+      
+      return `<div style="width: 52px; height: 32px; background-color: ${trackBg}; border: ${trackBorder}; border-radius: 16px; display: inline-flex; align-items: center; position: relative; cursor: pointer; box-sizing: border-box;">
+        <div style="width: ${thumbSize}; height: ${thumbSize}; background-color: ${thumbBg}; border-radius: 50%; position: absolute; left: ${thumbLeft}; top: 50%; transform: translateY(-50%); transition: all 0.2s;"></div>
       </div>`;
     },
   });
@@ -813,7 +879,8 @@ export function registerDefaults() {
       const base = defaultPropsAndClass(props, context);
       const style: React.CSSProperties = {
         borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.05)',
+        backgroundColor: 'var(--md-sys-color-surface-variant)',
+        color: 'var(--md-sys-color-on-surface-variant)',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         overflow: 'hidden',
         boxSizing: 'border-box',
@@ -822,7 +889,7 @@ export function registerDefaults() {
       return React.createElement('div', { ...base, style }, children);
     },
     htmlRender: (props, childrenHtml) => {
-      return `<div style="border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); overflow: hidden;">${childrenHtml}</div>`;
+      return `<div style="border-radius: 12px; background-color: var(--md-sys-color-surface-variant); color: var(--md-sys-color-on-surface-variant); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); overflow: hidden; box-sizing: border-box;">${childrenHtml}</div>`;
     },
   });
 
@@ -831,18 +898,24 @@ export function registerDefaults() {
     name: 'Surface',
     allowedParams: {
       modifier: 'modifier',
+      color: 'color',
+      contentColor: 'color',
     },
     requiredParams: [],
     render: (props, children, context) => {
       const base = defaultPropsAndClass(props, context);
       const style: React.CSSProperties = {
         boxSizing: 'border-box',
+        backgroundColor: props.color ? resolveColor(props.color) : 'var(--md-sys-color-surface)',
+        color: props.contentColor ? resolveColor(props.contentColor) : 'var(--md-sys-color-on-surface)',
         ...base.style,
       };
       return React.createElement('div', { ...base, style }, children);
     },
     htmlRender: (props, childrenHtml) => {
-      return `<div style="box-sizing: border-box;">${childrenHtml}</div>`;
+      const bgColor = props.color ? resolveColor(props.color) : 'var(--md-sys-color-surface)';
+      const textColor = props.contentColor ? resolveColor(props.contentColor) : 'var(--md-sys-color-on-surface)';
+      return `<div style="box-sizing: border-box; background-color: ${bgColor}; color: ${textColor};">${childrenHtml}</div>`;
     },
   });
 
@@ -901,7 +974,7 @@ export function registerDefaults() {
     requiredParams: [],
     render: (props, children, context) => {
       const base = defaultPropsAndClass(props, context);
-      const color = props.color ? resolveColor(props.color) : '#3b82f6';
+      const color = props.color ? resolveColor(props.color) : 'var(--md-sys-color-primary)';
       
       const spinnerStyle = {
         width: '32px',
@@ -920,7 +993,7 @@ export function registerDefaults() {
       });
     },
     htmlRender: (props) => {
-      const color = props.color ? resolveColor(props.color) : '#3b82f6';
+      const color = props.color ? resolveColor(props.color) : 'var(--md-sys-color-primary)';
       return `<div style="width: 32px; height: 32px; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid ${color}; border-radius: 50%;"></div>`;
     },
   });
@@ -1135,30 +1208,30 @@ export function registerDefaults() {
   };
 
   // 1. Cards
-  registerBoxContainer('ElevatedCard', { borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', padding: '16px', backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.05)' });
-  registerBoxContainer('OutlinedCard', { borderRadius: '12px', border: '1px solid #475569', padding: '16px', backgroundColor: 'transparent' });
+  registerBoxContainer('ElevatedCard', { borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', padding: '16px', backgroundColor: 'var(--md-sys-color-surface-variant)', border: 'none' });
+  registerBoxContainer('OutlinedCard', { borderRadius: '12px', border: '1px solid var(--md-sys-color-outline)', padding: '16px', backgroundColor: 'transparent' });
 
   // 2. Structural & Layout containers
-  registerBoxContainer('NavigationBar', { height: '80px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', backgroundColor: '#0f172a', borderTop: '1px solid #334155' });
-  registerBoxContainer('NavigationRail', { width: '80px', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: '#0f172a', borderRight: '1px solid #334155' });
-  registerBoxContainer('NavigationDrawer', { width: '280px', height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: '#0f172a', borderRight: '1px solid #334155', padding: '16px' });
+  registerBoxContainer('NavigationBar', { height: '80px', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-around', backgroundColor: 'var(--md-sys-color-surface)', borderTop: '1px solid var(--md-sys-color-outline)' });
+  registerBoxContainer('NavigationRail', { width: '80px', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', backgroundColor: 'var(--md-sys-color-surface)', borderRight: '1px solid var(--md-sys-color-outline)' });
+  registerBoxContainer('NavigationDrawer', { width: '280px', height: '100%', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--md-sys-color-surface)', borderRight: '1px solid var(--md-sys-color-outline)', padding: '16px' });
   registerBoxContainer('NavigationSuite', { display: 'flex', width: '100%', height: '100%' });
 
   // 3. Headers & Footers
-  registerBoxContainer('TopAppBar', { height: '64px', display: 'flex', alignItems: 'center', padding: '0 16px', backgroundColor: '#1e293b', borderBottom: '1px solid #334155', fontWeight: 'bold' }, 'header');
-  registerBoxContainer('CenterAlignedTopAppBar', { height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', backgroundColor: '#1e293b', borderBottom: '1px solid #334155', fontWeight: 'bold' }, 'header');
-  registerBoxContainer('LargeTopAppBar', { height: '128px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '16px', backgroundColor: '#1e293b', borderBottom: '1px solid #334155', fontWeight: 'bold' }, 'header');
-  registerBoxContainer('MediumTopAppBar', { height: '96px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '16px', backgroundColor: '#1e293b', borderBottom: '1px solid #334155', fontWeight: 'bold' }, 'header');
-  registerBoxContainer('BottomAppBar', { height: '80px', display: 'flex', alignItems: 'center', padding: '0 16px', backgroundColor: '#1e293b', borderTop: '1px solid #334155' }, 'footer');
+  registerBoxContainer('TopAppBar', { height: '64px', display: 'flex', alignItems: 'center', padding: '0 16px', backgroundColor: 'var(--md-sys-color-surface)', borderBottom: '1px solid var(--md-sys-color-outline)', fontWeight: 'bold' }, 'header');
+  registerBoxContainer('CenterAlignedTopAppBar', { height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', backgroundColor: 'var(--md-sys-color-surface)', borderBottom: '1px solid var(--md-sys-color-outline)', fontWeight: 'bold' }, 'header');
+  registerBoxContainer('LargeTopAppBar', { height: '128px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '16px', backgroundColor: 'var(--md-sys-color-surface)', borderBottom: '1px solid var(--md-sys-color-outline)', fontWeight: 'bold' }, 'header');
+  registerBoxContainer('MediumTopAppBar', { height: '96px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '16px', backgroundColor: 'var(--md-sys-color-surface)', borderBottom: '1px solid var(--md-sys-color-outline)', fontWeight: 'bold' }, 'header');
+  registerBoxContainer('BottomAppBar', { height: '80px', display: 'flex', alignItems: 'center', padding: '0 16px', backgroundColor: 'var(--md-sys-color-surface)', borderTop: '1px solid var(--md-sys-color-outline)' }, 'footer');
 
   // 4. List Items & Badges
-  registerBoxContainer('ListItem', { display: 'flex', alignItems: 'center', padding: '12px 16px', backgroundColor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.05)', gap: '16px' });
+  registerBoxContainer('ListItem', { display: 'flex', alignItems: 'center', padding: '12px 16px', backgroundColor: 'transparent', borderBottom: '1px solid var(--md-sys-color-outline)', gap: '16px' });
   registerBoxContainer('BadgeBox', { position: 'relative', display: 'inline-flex' });
   registerBoxContainer('ExposedDropdownMenuBox', { position: 'relative', display: 'inline-block', width: '100%' });
 
   // Tab rows & scrolling elements
-  registerBoxContainer('TabRow', { display: 'flex', flexDirection: 'row', width: '100%', borderBottom: '1px solid #334155', backgroundColor: '#0f172a' });
-  registerBoxContainer('ScrollableTabRow', { display: 'flex', flexDirection: 'row', width: '100%', overflowX: 'auto', borderBottom: '1px solid #334155', backgroundColor: '#0f172a' });
+  registerBoxContainer('TabRow', { display: 'flex', flexDirection: 'row', width: '100%', borderBottom: '1px solid var(--md-sys-color-outline)', backgroundColor: 'var(--md-sys-color-surface)' });
+  registerBoxContainer('ScrollableTabRow', { display: 'flex', flexDirection: 'row', width: '100%', overflowX: 'auto', borderBottom: '1px solid var(--md-sys-color-outline)', backgroundColor: 'var(--md-sys-color-surface)' });
   registerBoxContainer('Pager', { display: 'flex', flexDirection: 'row', overflowX: 'auto', scrollSnapType: 'x mandatory', width: '100%' });
 
   // 5. Buttons mapping helper
@@ -1177,11 +1250,11 @@ export function registerDefaults() {
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '8px 16px',
-          backgroundColor: '#3b82f6',
-          color: '#ffffff',
+          padding: '10px 24px',
+          backgroundColor: 'var(--md-sys-color-primary)',
+          color: 'var(--md-sys-color-on-primary)',
           border: 'none',
-          borderRadius: '6px',
+          borderRadius: '100px',
           fontSize: '14px',
           fontWeight: '500',
           cursor: 'pointer',
@@ -1200,20 +1273,23 @@ export function registerDefaults() {
         return React.createElement('button', { ...base, style, onClick: onBtnClick }, children);
       },
       htmlRender: (props, childrenHtml) => {
-        return `<button style="padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer;">${childrenHtml}</button>`;
+        const defaultStyleStr = `padding: 10px 24px; border: none; border-radius: 100px; cursor: pointer; font-size: 14px; font-weight: 500; background-color: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary)`;
+        // Convert camelCase style overrides to CSS
+        const customStyleStr = Object.entries(customStyle).map(([k, v]) => `${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}: ${v}`).join('; ');
+        return `<button style="${defaultStyleStr}; ${customStyleStr}">${childrenHtml}</button>`;
       }
     });
   };
 
-  registerButtonType('ElevatedButton', { boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', backgroundColor: '#334155' });
-  registerButtonType('FilledTonalButton', { backgroundColor: '#475569', color: '#f8fafc' });
-  registerButtonType('OutlinedButton', { border: '1px solid #475569', backgroundColor: 'transparent', color: '#38bdf8' });
-  registerButtonType('TextButton', { backgroundColor: 'transparent', color: '#38bdf8' });
-  registerButtonType('IconButton', { padding: '8px', borderRadius: '50%', minWidth: 'auto', backgroundColor: 'transparent', color: '#dfe1e5' });
-  registerButtonType('FilledIconButton', { padding: '8px', borderRadius: '50%', minWidth: 'auto', backgroundColor: '#3b82f6' });
-  registerButtonType('OutlinedIconButton', { padding: '8px', borderRadius: '50%', minWidth: 'auto', border: '1px solid #475569', backgroundColor: 'transparent', color: '#dfe1e5' });
-  registerButtonType('FloatingActionButton', { padding: '16px', borderRadius: '16px', backgroundColor: '#38bdf8', color: '#0f172a', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', fontWeight: 'bold' });
-  registerButtonType('ExtendedFloatingActionButton', { padding: '16px 24px', borderRadius: '16px', backgroundColor: '#38bdf8', color: '#0f172a', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', fontWeight: 'bold' });
+  registerButtonType('ElevatedButton', { boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', backgroundColor: 'var(--md-sys-color-surface)', color: 'var(--md-sys-color-primary)' });
+  registerButtonType('FilledTonalButton', { backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)' });
+  registerButtonType('OutlinedButton', { border: '1px solid var(--md-sys-color-outline)', backgroundColor: 'transparent', color: 'var(--md-sys-color-primary)' });
+  registerButtonType('TextButton', { backgroundColor: 'transparent', color: 'var(--md-sys-color-primary)' });
+  registerButtonType('IconButton', { padding: '8px', borderRadius: '50%', minWidth: 'auto', backgroundColor: 'transparent', color: 'var(--md-sys-color-primary)' });
+  registerButtonType('FilledIconButton', { padding: '8px', borderRadius: '50%', minWidth: 'auto', backgroundColor: 'var(--md-sys-color-primary)', color: 'var(--md-sys-color-on-primary)' });
+  registerButtonType('OutlinedIconButton', { padding: '8px', borderRadius: '50%', minWidth: 'auto', border: '1px solid var(--md-sys-color-outline)', backgroundColor: 'transparent', color: 'var(--md-sys-color-primary)' });
+  registerButtonType('FloatingActionButton', { padding: '16px', borderRadius: '16px', backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', fontWeight: 'bold' });
+  registerButtonType('ExtendedFloatingActionButton', { padding: '16px 24px', borderRadius: '16px', backgroundColor: 'var(--md-sys-color-primary-container)', color: 'var(--md-sys-color-on-primary-container)', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', fontWeight: 'bold' });
 
   // 6. Dialogue, Overlays, and Sheets
   compRegistry.register({
@@ -1240,7 +1316,8 @@ export function registerDefaults() {
         width: '100%',
         position: 'relative',
         boxSizing: 'border-box',
-        backgroundColor: '#0f172a',
+        backgroundColor: 'var(--md-sys-color-background)',
+        color: 'var(--md-sys-color-on-background)',
         ...base.style,
       };
 
@@ -1291,7 +1368,7 @@ export function registerDefaults() {
           'div',
           {
             style: {
-              backgroundColor: '#1e293b',
+              backgroundColor: 'var(--md-sys-color-surface-container-high)',
               borderRadius: '28px',
               padding: '24px',
               maxWidth: '320px',
@@ -1301,8 +1378,8 @@ export function registerDefaults() {
               gap: '16px',
             }
           },
-          titleNode && React.createElement('div', { style: { fontSize: '20px', fontWeight: '500', color: '#f8fafc' } }, titleNode),
-          textNode && React.createElement('div', { style: { fontSize: '14px', color: '#94a3b8', lineHeight: '1.5' } }, textNode),
+          titleNode && React.createElement('div', { style: { fontSize: '20px', fontWeight: '500', color: 'var(--md-sys-color-on-surface)' } }, titleNode),
+          textNode && React.createElement('div', { style: { fontSize: '14px', color: 'var(--md-sys-color-on-surface-variant)', lineHeight: '1.5' } }, textNode),
           children,
           React.createElement(
             'div',
@@ -1320,7 +1397,7 @@ export function registerDefaults() {
     allowedParams: { onDismissRequest: 'lambda' },
     requiredParams: ['onDismissRequest'],
     render: (props, children, context) => {
-      return React.createElement('div', { style: { padding: '16px', borderRadius: '12px', border: '1px solid #ccc' } }, children);
+      return React.createElement('div', { style: { padding: '16px', borderRadius: '12px', border: '1px solid var(--md-sys-color-outline)', backgroundColor: 'var(--md-sys-color-surface)', color: 'var(--md-sys-color-on-surface)' } }, children);
     }
   });
 
@@ -1335,7 +1412,8 @@ export function registerDefaults() {
           style: {
             position: 'absolute',
             left: 0, right: 0, bottom: 0,
-            backgroundColor: '#1e293b',
+            backgroundColor: 'var(--md-sys-color-surface)',
+            color: 'var(--md-sys-color-on-surface)',
             borderTopLeftRadius: '28px',
             borderTopRightRadius: '28px',
             padding: '24px',
@@ -1378,8 +1456,8 @@ export function registerDefaults() {
         padding: '12px 14px',
         borderRadius: '6px',
         backgroundColor: 'transparent',
-        border: '1.5px solid #475569',
-        color: '#f8fafc',
+        border: '1.5px solid var(--md-sys-color-outline)',
+        color: 'var(--md-sys-color-on-surface)',
         outline: 'none',
         boxSizing: 'border-box' as const,
         ...base.style,
@@ -1394,7 +1472,7 @@ export function registerDefaults() {
       
       if (props.label) {
         return React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: '4px', width: '100%' } },
-          React.createElement('div', { style: { fontSize: '12px', color: '#38bdf8', paddingLeft: '4px' } }, props.label()),
+          React.createElement('div', { style: { fontSize: '12px', color: 'var(--md-sys-color-primary)', paddingLeft: '4px' } }, props.label()),
           inputElement
         );
       }
@@ -1414,11 +1492,12 @@ export function registerDefaults() {
       const base = defaultPropsAndClass(props, context);
       const style = {
         width: '100%',
-        padding: '10px 12px',
-        borderRadius: '6px',
-        backgroundColor: '#0f172a',
-        border: '1px solid #334155',
-        color: '#f8fafc',
+        padding: '12px 16px',
+        borderRadius: '4px 4px 0 0',
+        backgroundColor: 'var(--md-sys-color-surface-variant)',
+        border: 'none',
+        borderBottom: '1px solid var(--md-sys-color-outline)',
+        color: 'var(--md-sys-color-on-surface-variant)',
         outline: 'none',
         boxSizing: 'border-box' as const,
         ...base.style,
@@ -1446,7 +1525,7 @@ export function registerDefaults() {
         width: '20px',
         height: '20px',
         borderRadius: '50%',
-        border: `2px solid ${isSelected ? '#38bdf8' : '#64748b'}`,
+        border: `2px solid ${isSelected ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-outline)'}`,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -1459,7 +1538,7 @@ export function registerDefaults() {
         width: '10px',
         height: '10px',
         borderRadius: '50%',
-        backgroundColor: '#38bdf8',
+        backgroundColor: 'var(--md-sys-color-primary)',
         display: isSelected ? 'block' : 'none',
       };
 
@@ -1523,7 +1602,7 @@ export function registerDefaults() {
       const trackStyle: React.CSSProperties = {
         width: '100%',
         height: '4px',
-        backgroundColor: '#334155',
+        backgroundColor: 'var(--md-sys-color-surface-variant)',
         borderRadius: '2px',
         overflow: 'hidden',
         position: 'relative',
@@ -1532,7 +1611,7 @@ export function registerDefaults() {
 
       const barStyle: React.CSSProperties = {
         height: '100%',
-        backgroundColor: '#38bdf8',
+        backgroundColor: 'var(--md-sys-color-primary)',
         width: progress !== null ? `${progress * 100}%` : '50%',
       };
 
@@ -1566,7 +1645,7 @@ export function registerDefaults() {
     requiredParams: [],
     render: (props, children, context) => {
       const base = defaultPropsAndClass(props, context);
-      const color = props.color ? resolveColor(props.color) : 'rgba(255,255,255,0.12)';
+      const color = props.color ? resolveColor(props.color) : 'var(--md-sys-color-outline)';
       const thickness = props.thickness || 1;
       return React.createElement('div', {
         ...base,
@@ -1587,7 +1666,7 @@ export function registerDefaults() {
     requiredParams: [],
     render: (props, children, context) => {
       const base = defaultPropsAndClass(props, context);
-      const color = props.color ? resolveColor(props.color) : 'rgba(255,255,255,0.12)';
+      const color = props.color ? resolveColor(props.color) : 'var(--md-sys-color-outline)';
       const thickness = props.thickness || 1;
       return React.createElement('div', {
         ...base,
@@ -1609,7 +1688,7 @@ export function registerDefaults() {
     requiredParams: [],
     render: (props, children, context) => {
       const base = defaultPropsAndClass(props, context);
-      const color = props.color ? resolveColor(props.color) : 'rgba(255,255,255,0.12)';
+      const color = props.color ? resolveColor(props.color) : 'var(--md-sys-color-outline)';
       const thickness = props.thickness || 1;
       return React.createElement('div', {
         ...base,
@@ -1634,12 +1713,12 @@ export function registerDefaults() {
           gap: '8px',
           padding: '6px 12px',
           borderRadius: '8px',
-          backgroundColor: '#334155',
-          color: '#f8fafc',
+          backgroundColor: 'var(--md-sys-color-surface-variant)',
+          color: 'var(--md-sys-color-on-surface-variant)',
           fontSize: '12px',
           fontWeight: '500',
           cursor: 'pointer',
-          border: '1px solid rgba(255,255,255,0.1)',
+          border: '1px solid var(--md-sys-color-outline)',
           ...base.style,
         };
         return React.createElement('div', { ...base, style, onClick: props.onClick }, children);
@@ -1663,7 +1742,9 @@ export function registerDefaults() {
       return React.createElement('div', {
         style: {
           position: 'absolute', right: 0, top: '100%',
-          backgroundColor: '#1e293b', border: '1px solid #334155',
+          backgroundColor: 'var(--md-sys-color-surface-container-high)',
+          border: '1px solid var(--md-sys-color-outline)',
+          color: 'var(--md-sys-color-on-surface)',
           borderRadius: '8px', padding: '8px 0', zIndex: 100, minWidth: '120px'
         }
       }, children);
@@ -1679,11 +1760,11 @@ export function registerDefaults() {
       const days = Array.from({ length: 30 }, (_, i) => i + 1);
       return React.createElement('div', {
         ...base,
-        style: { padding: '16px', backgroundColor: '#1e293b', borderRadius: '16px', width: '280px', display: 'flex', flexDirection: 'column', gap: '8px', ...base.style }
+        style: { padding: '16px', backgroundColor: 'var(--md-sys-color-surface-container-high)', color: 'var(--md-sys-color-on-surface)', borderRadius: '16px', width: '280px', display: 'flex', flexDirection: 'column', gap: '8px', ...base.style }
       },
-        React.createElement('div', { style: { fontWeight: 'bold', borderBottom: '1px solid #475569', paddingBottom: '8px' } }, 'June 2026'),
+        React.createElement('div', { style: { fontWeight: 'bold', borderBottom: '1px solid var(--md-sys-color-outline)', paddingBottom: '8px' } }, 'June 2026'),
         React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', textAlign: 'center', fontSize: '11px' } },
-          days.map(d => React.createElement('span', { key: d, style: { padding: '6px 0', cursor: 'pointer', borderRadius: '50%', backgroundColor: d === 30 ? '#38bdf8' : 'transparent', color: d === 30 ? '#0f172a' : 'inherit' } }, d))
+          days.map(d => React.createElement('span', { key: d, style: { padding: '6px 0', cursor: 'pointer', borderRadius: '50%', backgroundColor: d === 30 ? 'var(--md-sys-color-primary)' : 'transparent', color: d === 30 ? 'var(--md-sys-color-on-primary)' : 'inherit' } }, d))
         )
       );
     }
@@ -1697,12 +1778,12 @@ export function registerDefaults() {
       const base = defaultPropsAndClass(props, context);
       return React.createElement('div', {
         ...base,
-        style: { padding: '16px', backgroundColor: '#1e293b', borderRadius: '16px', width: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', ...base.style }
+        style: { padding: '16px', backgroundColor: 'var(--md-sys-color-surface-container-high)', color: 'var(--md-sys-color-on-surface)', borderRadius: '16px', width: '180px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', ...base.style }
       },
         React.createElement('div', { style: { fontSize: '28px', fontWeight: 'bold', display: 'flex', gap: '4px' } },
-          React.createElement('span', { style: { backgroundColor: '#334155', padding: '4px 8px', borderRadius: '4px' } }, '15'),
+          React.createElement('span', { style: { backgroundColor: 'var(--md-sys-color-surface-variant)', color: 'var(--md-sys-color-on-surface-variant)', padding: '4px 8px', borderRadius: '4px' } }, '15'),
           React.createElement('span', null, ':'),
-          React.createElement('span', { style: { backgroundColor: '#334155', padding: '4px 8px', borderRadius: '4px' } }, '45')
+          React.createElement('span', { style: { backgroundColor: 'var(--md-sys-color-surface-variant)', color: 'var(--md-sys-color-on-surface-variant)', padding: '4px 8px', borderRadius: '4px' } }, '45')
         )
       );
     }
@@ -1716,7 +1797,7 @@ export function registerDefaults() {
       const base = defaultPropsAndClass(props, context);
       return React.createElement('div', {
         ...base,
-        style: { position: 'absolute', backgroundColor: 'rgba(0,0,0,0.85)', color: '#fff', fontSize: '10px', padding: '4px 8px', borderRadius: '4px', zIndex: 1000, pointerEvents: 'none', ...base.style }
+        style: { position: 'absolute', backgroundColor: 'var(--md-sys-color-inverse-surface)', color: 'var(--md-sys-color-inverse-on-surface)', fontSize: '10px', padding: '4px 8px', borderRadius: '4px', zIndex: 1000, pointerEvents: 'none', ...base.style }
       }, children);
     }
   });
@@ -1729,8 +1810,457 @@ export function registerDefaults() {
       const base = defaultPropsAndClass(props, context);
       return React.createElement('div', {
         ...base,
-        style: { position: 'absolute', bottom: '16px', left: '16px', right: '16px', padding: '14px 16px', backgroundColor: '#334155', color: '#f8fafc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 999, ...base.style }
+        style: { position: 'absolute', bottom: '16px', left: '16px', right: '16px', padding: '14px 16px', backgroundColor: 'var(--md-sys-color-inverse-surface)', color: 'var(--md-sys-color-inverse-on-surface)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', zIndex: 999, ...base.style }
       }, children);
+    }
+  });
+
+  // NavigationBarItem
+  compRegistry.register({
+    name: 'NavigationBarItem',
+    allowedParams: {
+      selected: 'boolean',
+      onClick: 'lambda',
+      icon: 'lambda',
+      label: 'lambda',
+      modifier: 'modifier',
+    },
+    requiredParams: ['selected', 'onClick', 'icon'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const isSelected = !!props.selected;
+
+      const style: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '4px',
+        cursor: 'pointer',
+        flex: 1,
+        padding: '8px 0',
+        userSelect: 'none',
+        ...base.style,
+      };
+
+      const iconContainerStyle: React.CSSProperties = {
+        padding: '4px 16px',
+        borderRadius: '16px',
+        backgroundColor: isSelected ? 'var(--md-sys-color-secondary-container)' : 'transparent',
+        color: isSelected ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface-variant)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: 'background-color 0.2s',
+      };
+
+      const labelStyle: React.CSSProperties = {
+        fontSize: '12px',
+        fontWeight: isSelected ? '600' : '400',
+        color: isSelected ? 'var(--md-sys-color-on-surface)' : 'var(--md-sys-color-on-surface-variant)',
+      };
+
+      const onSelect = () => {
+        if (context.inspectMode) return;
+        if (props.onClick) props.onClick();
+      };
+
+      const iconNode = props.icon ? props.icon() : null;
+      const labelNode = props.label ? props.label() : null;
+
+      return React.createElement('div', { ...base, style, onClick: onSelect },
+        React.createElement('div', { style: iconContainerStyle }, iconNode),
+        labelNode && React.createElement('div', { style: labelStyle }, labelNode)
+      );
+    },
+    htmlRender: (props) => {
+      const isSelected = !!props.selected;
+      const iconBg = isSelected ? 'var(--md-sys-color-secondary-container)' : 'transparent';
+      const labelWeight = isSelected ? '600' : '400';
+      const labelColor = isSelected ? 'var(--md-sys-color-on-surface)' : 'var(--md-sys-color-on-surface-variant)';
+      return `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; flex: 1; cursor: pointer; padding: 8px 0;">
+        <div style="padding: 4px 16px; border-radius: 16px; background-color: ${iconBg}; display: flex; align-items: center; justify-content: center;"></div>
+        <div style="font-size: 12px; font-weight: ${labelWeight}; color: ${labelColor};"></div>
+      </div>`;
+    }
+  });
+
+  // NavigationRailItem
+  compRegistry.register({
+    name: 'NavigationRailItem',
+    allowedParams: {
+      selected: 'boolean',
+      onClick: 'lambda',
+      icon: 'lambda',
+      label: 'lambda',
+      modifier: 'modifier',
+    },
+    requiredParams: ['selected', 'onClick', 'icon'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const isSelected = !!props.selected;
+
+      const style: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '4px',
+        cursor: 'pointer',
+        padding: '12px 0',
+        width: '100%',
+        userSelect: 'none',
+        ...base.style,
+      };
+
+      const iconContainerStyle: React.CSSProperties = {
+        padding: '4px 12px',
+        borderRadius: '16px',
+        backgroundColor: isSelected ? 'var(--md-sys-color-secondary-container)' : 'transparent',
+        color: isSelected ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface-variant)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      };
+
+      const labelStyle: React.CSSProperties = {
+        fontSize: '12px',
+        color: isSelected ? 'var(--md-sys-color-on-surface)' : 'var(--md-sys-color-on-surface-variant)',
+      };
+
+      const onSelect = () => {
+        if (context.inspectMode) return;
+        if (props.onClick) props.onClick();
+      };
+
+      const iconNode = props.icon ? props.icon() : null;
+      const labelNode = props.label ? props.label() : null;
+
+      return React.createElement('div', { ...base, style, onClick: onSelect },
+        React.createElement('div', { style: iconContainerStyle }, iconNode),
+        labelNode && React.createElement('div', { style: labelStyle }, labelNode)
+      );
+    }
+  });
+
+  // NavigationDrawerItem
+  compRegistry.register({
+    name: 'NavigationDrawerItem',
+    allowedParams: {
+      selected: 'boolean',
+      onClick: 'lambda',
+      icon: 'lambda',
+      label: 'lambda',
+      modifier: 'modifier',
+    },
+    requiredParams: ['selected', 'onClick', 'label'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const isSelected = !!props.selected;
+
+      const style: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: '12px 24px',
+        gap: '12px',
+        cursor: 'pointer',
+        borderRadius: '100px',
+        backgroundColor: isSelected ? 'var(--md-sys-color-secondary-container)' : 'transparent',
+        color: isSelected ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface-variant)',
+        userSelect: 'none',
+        ...base.style,
+      };
+
+      const onSelect = () => {
+        if (context.inspectMode) return;
+        if (props.onClick) props.onClick();
+      };
+
+      const iconNode = props.icon ? props.icon() : null;
+      const labelNode = props.label ? props.label() : null;
+
+      return React.createElement('div', { ...base, style, onClick: onSelect },
+        iconNode,
+        labelNode
+      );
+    }
+  });
+
+  // Tab
+  compRegistry.register({
+    name: 'Tab',
+    allowedParams: {
+      selected: 'boolean',
+      onClick: 'lambda',
+      text: 'string',
+      icon: 'lambda',
+      modifier: 'modifier',
+    },
+    requiredParams: ['selected', 'onClick'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const isSelected = !!props.selected;
+
+      const style: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '12px 16px',
+        cursor: 'pointer',
+        flex: 1,
+        gap: '4px',
+        userSelect: 'none',
+        borderBottom: isSelected ? '2px solid var(--md-sys-color-primary)' : '2px solid transparent',
+        color: isSelected ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-on-surface-variant)',
+        transition: 'all 0.2s',
+        ...base.style,
+      };
+
+      const onSelect = () => {
+        if (context.inspectMode) return;
+        if (props.onClick) props.onClick();
+      };
+
+      const iconNode = props.icon ? props.icon() : null;
+
+      return React.createElement('div', { ...base, style, onClick: onSelect },
+        iconNode,
+        props.text && React.createElement('span', { style: { fontSize: '14px', fontWeight: '500' } }, props.text)
+      );
+    },
+    htmlRender: (props) => {
+      const isSelected = !!props.selected;
+      const borderBottom = isSelected ? '2px solid var(--md-sys-color-primary)' : '2px solid transparent';
+      const color = isSelected ? 'var(--md-sys-color-primary)' : 'var(--md-sys-color-on-surface-variant)';
+      return `<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; padding: 12px 16px; border-bottom: ${borderBottom}; color: ${color}; cursor: pointer;">
+        <span style="font-size: 14px; font-weight: 500;">${props.text || ''}</span>
+      </div>`;
+    }
+  });
+
+  // SegmentedButtonRow
+  compRegistry.register({
+    name: 'SegmentedButtonRow',
+    allowedParams: {
+      modifier: 'modifier',
+    },
+    requiredParams: [],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const style: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'row',
+        border: '1px solid var(--md-sys-color-outline)',
+        borderRadius: '100px',
+        overflow: 'hidden',
+        width: '100%',
+        boxSizing: 'border-box',
+        ...base.style,
+      };
+      return React.createElement('div', { ...base, style }, children);
+    },
+    htmlRender: (props, childrenHtml) => {
+      return `<div style="display: flex; flex-direction: row; border: 1px solid var(--md-sys-color-outline); border-radius: 100px; overflow: hidden; width: 100%; box-sizing: border-box;">${childrenHtml}</div>`;
+    }
+  });
+
+  // SegmentedButton
+  compRegistry.register({
+    name: 'SegmentedButton',
+    allowedParams: {
+      selected: 'boolean',
+      onClick: 'lambda',
+      modifier: 'modifier',
+    },
+    requiredParams: ['selected', 'onClick'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const isSelected = !!props.selected;
+
+      const style: React.CSSProperties = {
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '10px 16px',
+        cursor: 'pointer',
+        userSelect: 'none',
+        backgroundColor: isSelected ? 'var(--md-sys-color-secondary-container)' : 'transparent',
+        color: isSelected ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface)',
+        borderRight: '1px solid var(--md-sys-color-outline)',
+        transition: 'all 0.2s',
+        ...base.style,
+      };
+
+      const onSegmentClick = () => {
+        if (context.inspectMode) return;
+        if (props.onClick) props.onClick();
+      };
+
+      return React.createElement('div', { ...base, style, onClick: onSegmentClick }, children);
+    },
+    htmlRender: (props, childrenHtml) => {
+      const isSelected = !!props.selected;
+      const bg = isSelected ? 'var(--md-sys-color-secondary-container)' : 'transparent';
+      const color = isSelected ? 'var(--md-sys-color-on-secondary-container)' : 'var(--md-sys-color-on-surface)';
+      return `<div style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 10px 16px; background-color: ${bg}; color: ${color}; border-right: 1px solid var(--md-sys-color-outline); cursor: pointer;">${childrenHtml}</div>`;
+    }
+  });
+
+  // SearchBar
+  compRegistry.register({
+    name: 'SearchBar',
+    allowedParams: {
+      query: 'string',
+      onQueryChange: 'lambda',
+      placeholder: 'string',
+      active: 'boolean',
+      modifier: 'modifier',
+    },
+    requiredParams: ['query', 'onQueryChange'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      
+      const style: React.CSSProperties = {
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px 16px',
+        gap: '12px',
+        backgroundColor: 'var(--md-sys-color-surface-container-high)',
+        borderRadius: '28px',
+        width: '100%',
+        boxSizing: 'border-box',
+        minHeight: '56px',
+        ...base.style,
+      };
+
+      const inputStyle: React.CSSProperties = {
+        flex: 1,
+        background: 'transparent',
+        border: 'none',
+        outline: 'none',
+        fontSize: '16px',
+        color: 'var(--md-sys-color-on-surface)',
+      };
+
+      const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (context.inspectMode) return;
+        if (props.onQueryChange) props.onQueryChange(e.target.value);
+      };
+
+      return React.createElement('div', { ...base, style },
+        React.createElement('span', { style: { fontSize: '18px', color: 'var(--md-sys-color-on-surface-variant)' } }, '🔍'),
+        React.createElement('input', {
+          type: 'text',
+          style: inputStyle,
+          placeholder: props.placeholder || 'Search...',
+          value: props.query || '',
+          onChange,
+          disabled: context.inspectMode,
+        }),
+        children
+      );
+    },
+    htmlRender: (props, childrenHtml) => {
+      return `<div style="display: flex; align-items: center; padding: 12px 16px; background-color: var(--md-sys-color-surface-container-high); border-radius: 28px; width: 100%; box-sizing: border-box; min-height: 56px;">
+        <span style="margin-right: 8px;">🔍</span>
+        <input type="text" style="background: transparent; border: none; outline: none; flex: 1; font-size: 16px;" placeholder="${props.placeholder || 'Search...'}" value="${props.query || ''}" />
+        ${childrenHtml}
+      </div>`;
+    }
+  });
+
+  // SideSheet
+  compRegistry.register({
+    name: 'SideSheet',
+    allowedParams: {
+      modifier: 'modifier',
+    },
+    requiredParams: [],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const style: React.CSSProperties = {
+        display: 'flex',
+        flexDirection: 'column',
+        width: '360px',
+        height: '100%',
+        backgroundColor: 'var(--md-sys-color-surface)',
+        color: 'var(--md-sys-color-on-surface)',
+        borderLeft: '1px solid var(--md-sys-color-outline)',
+        boxSizing: 'border-box',
+        ...base.style,
+      };
+      return React.createElement('div', { ...base, style }, children);
+    },
+    htmlRender: (props, childrenHtml) => {
+      return `<div style="display: flex; flex-direction: column; width: 360px; height: 100%; background-color: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border-left: 1px solid var(--md-sys-color-outline); box-sizing: border-box;">${childrenHtml}</div>`;
+    }
+  });
+
+  // FullScreenDialog
+  compRegistry.register({
+    name: 'FullScreenDialog',
+    allowedParams: {
+      onDismissRequest: 'lambda',
+      modifier: 'modifier',
+    },
+    requiredParams: ['onDismissRequest'],
+    render: (props, children, context) => {
+      const base = defaultPropsAndClass(props, context);
+      const style: React.CSSProperties = {
+        position: 'absolute',
+        inset: 0,
+        backgroundColor: 'var(--md-sys-color-background)',
+        color: 'var(--md-sys-color-on-background)',
+        zIndex: 1000,
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+        ...base.style,
+      };
+      return React.createElement('div', { ...base, style }, children);
+    },
+    htmlRender: (props, childrenHtml) => {
+      return `<div style="position: absolute; inset: 0; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-background); display: flex; flex-direction: column; z-index: 1000; box-sizing: border-box;">${childrenHtml}</div>`;
+    }
+  });
+
+  // MATERIALTHEME
+  compRegistry.register({
+    name: 'MaterialTheme',
+    allowedParams: {
+      colorScheme: 'enum',
+      typography: 'enum',
+      theme: 'string',
+    },
+    requiredParams: [],
+    render: (props, children, context) => {
+      const isDarkTheme = props.theme === 'dark' || (props.colorScheme && props.colorScheme.isDark);
+      const className = isDarkTheme ? 'theme-dark' : '';
+      
+      const styleOverrides: Record<string, string> = {};
+      if (props.colorScheme && typeof props.colorScheme === 'object') {
+        Object.entries(props.colorScheme).forEach(([key, val]) => {
+          if (typeof val === 'string' && key !== 'isDark') {
+            styleOverrides[`--md-sys-color-${key}`] = val;
+          }
+        });
+      }
+
+      return React.createElement('div', {
+        className,
+        style: {
+          display: 'contents',
+          ...styleOverrides
+        }
+      }, children);
+    },
+    htmlRender: (props, childrenHtml) => {
+      const isDarkTheme = props.theme === 'dark' || (props.colorScheme && props.colorScheme.isDark);
+      const classNameAttr = isDarkTheme ? ' class="theme-dark"' : '';
+      return `<div${classNameAttr} style="display: contents;">${childrenHtml}</div>`;
     }
   });
 }
